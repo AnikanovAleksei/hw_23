@@ -11,18 +11,18 @@
     {% include 'catalog/_menu.html' %}
 </div>
 <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
-    {% for product in products %}
+    {% for product in object_list %}
     <div class="col">
         <div class="card mb-4 rounded-3 shadow-sm">
             <div class="card-header py-3">
-                <h4 class="my-0 fw-normal">{{ product.category }}</h4>
+                <h4 class="my-0 fw-normal">{{ object.category }}</h4>
             </div>
             <div class="card-body">
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image mb-3">
-                <h1 class="card-title pricing-card-title">{{ product.price }}₽</h1>
+                <h1 class="card-title pricing-card-title">{{ object.price }}₽</h1>
                 <ul class="list-unstyled mt-3 mb-4">
-                    <li>{{ product.name }}</li>
-                    <li>{{ product.description|truncatechars:100 }}</li>
+                    <li>{{ object.name }}</li>
+                    <li>{{ object.description|truncatechars:100 }}</li>
                 </ul>
                 <a class="btn btn-primary" href="{% url 'catalog:product_detail' product.pk %}"
                    role="button">Посмотреть</a>

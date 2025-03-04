@@ -14,14 +14,14 @@
         <div class="col offset-md-1">
             <div class="card mb-3 rounded-3 shadow-sm">
                 <div class="card-header py-2">
-                    <h6 class="my-0 fw-normal">{{ product.category }}</h6>
+                    <h6 class="my-0 fw-normal">{{ object.category }}</h6>
                 </div>
                 <div class="card-body">
                     <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid mb-2">
-                    <h5 class="card-title pricing-card-title">{{ product.price }}₽</h5>
+                    <h5 class="card-title pricing-card-title">{{ object.price }}₽</h5>
                     <ul class="list-unstyled mt-2 mb-3">
-                        <li>{{ product.name }}</li>
-                        <li>{{ product.description }}</li>
+                        <li>{{ object.name }}</li>
+                        <li>{{ object.description }}</li>
                     </ul>
                     <a class="btn btn-sm btn-primary" href="{% url 'catalog:product_list' %}" role="button">Назад</a>
                 </div>
