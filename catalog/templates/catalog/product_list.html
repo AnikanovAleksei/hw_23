@@ -6,44 +6,47 @@
 
 {% block content %}
 <body>
-<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-    <h1 class="display-4">Skystore</h1>
-    <p class="lead">Skystore - это отличный вариант хранения ваших плагинов и примеров кода, который вы бы хотели
-        продать</p>
-</div>
-<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-    <h5 class="my-0 mr-md-auto font-weight-normal">Skystore</h5>
-    <div class="container">
-    <div class="row">
-        <div class="col">
-            {% include 'catalog/_menu.html' %}
-        </div>
-        <div class="col ml-auto">
-            <h4>Добро пожаловать на главную страницу!</h4>
-        </div>
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Skystore</h1>
+        <p class="lead">
+            Skystore - это отличный вариант хранения ваших плагинов и примеров кода,
+            который вы бы хотели продать.
+        </p>
     </div>
-</div>
-</div>
-<div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
-    {% for product in object_list %}
-    <div class="col">
-        <div class="card mb-4 rounded-3 shadow-sm">
-            <div class="card-header py-3">
-                <h4 class="my-0 fw-normal"></h4>
-            </div>
-            <div class="card-body">
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image mb-3">
-                <h1 class="card-title pricing-card-title">{{ product.price }}₽</h1>
-                <ul class="list-unstyled mt-3 mb-4">
-                    <li>{{ product.name }}</li>
-                    <li>{{ product.description|truncatechars:100 }}</li>
-                </ul>
-                <a class="btn btn-primary" href="{% url 'catalog:product_detail' product.pk %}"
-                   role="button">Посмотреть</a>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
 
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+        <h5 class="my-0 mr-md-auto font-weight-normal">Skystore</h5>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    {% include 'catalog/_menu.html' %}
+                </div>
+                <div class="col ml-auto">
+                    <h4>Добро пожаловать в наш магазин!</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-3">
+        <h1 class="mb-4">Список товаров</h1>
+        <a href="{% url 'catalog:product_create' %}" class="btn btn-primary mb-3">Создать новый товар</a>
+        <div class="row row-cols-1 row-cols-md-3">
+            {% for product in object_list %}
+                <div class="col mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-primary">Подробнее</a>
+                            <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Редактировать</a>
+                            <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
 {% endblock %}
