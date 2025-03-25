@@ -1,0 +1,22 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}
+    Главная страница – Вход на сайт
+{% endblock %}
+
+{% block content %}
+<body>
+<div class="mt-3">
+    {% include 'catalog/_menu.html' %}
+</div>
+<div class="container mt-3">
+    <h1 class="mb-4">Вход на сайт</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+</div>
+<script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+{% endblock %}
