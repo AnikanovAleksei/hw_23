@@ -32,7 +32,6 @@ class Product(models.Model):
         verbose_name_plural = 'Товары'
         permissions = [
             ("can_unpublish_product", "Can unpublish product"),
-            ("can_delete_product", "Can delete product"),
         ]
 
     def __str__(self):

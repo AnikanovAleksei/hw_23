@@ -32,10 +32,14 @@
     </div>
 </div>
 
-<div class="container mt-3">
-    <h1 class="mb-4">Список товаров</h1>
+<div class="container mt-4">
+    <!-- Кнопка создания товара (видна только авторизованным) -->
     {% if user.is_authenticated %}
-    <a href="{% url 'catalog:product_create' %}" class="btn btn-primary mb-3">Создать новый товар</a>
+    <div class="mb-4">
+        <a href="{% url 'catalog:product_create' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Создать новый товар
+        </a>
+    </div>
     {% endif %}
 
     <div class="row row-cols-1 row-cols-md-3">
@@ -50,33 +54,31 @@
                         {% endif %}
                     </p>
 
-
                     <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-primary">Подробнее</a>
 
                     <div class="mt-2">
-
-                        {% if user == product.owner%}
+                        {% if user == product.owner %}
                         <a href="{% url 'catalog:product_update' product.pk %}"
                            class="btn btn-sm btn-outline-secondary">Редактировать</a>
                         {% endif %}
 
-                        {% if user == product.owner or perms.catalog.can_delete_product %}
-                        <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+                        {% if user == product.owner or perms.catalog.delete_product %}
+                        <a href="{% url 'catalog:product_delete' product.pk %}"
+                           class="btn btn-sm btn-outline-danger">Удалить</a>
                         {% endif %}
 
-                        {% if perms.catalog.can_unpublish_product and product.is_published %}
-                        <form action="{% url 'catalog:product_review' product.pk %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" name="unpublish" class="btn btn-sm btn-warning">Снять с публикации
-                            </button>
-                        </form>
-                        {% endif %}
-
-                        {% if user == product.owner and not product.is_published %}
-                        <form action="{% url 'catalog:product_review' product.pk %}" method="post" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" name="publish" class="btn btn-sm btn-success">Опубликовать</button>
-                        </form>
+                        {% if perms.catalog.can_unpublish_product %}
+                            {% if product.is_published %}
+                            <form action="{% url 'catalog:product_unpublish' product.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-warning">Снять с публикации</button>
+                            </form>
+                            {% else %}
+                            <form action="{% url 'catalog:product_publish' product.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-success">Опубликовать</button>
+                            </form>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

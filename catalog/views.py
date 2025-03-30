@@ -1,8 +1,8 @@
 from django.core.exceptions import PermissionDenied
+from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, View
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseForbidden
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from catalog.models import Product
 from catalog.forms import ProductForm
@@ -10,32 +10,24 @@ from catalog.forms import ProductForm
 from django.urls import reverse_lazy
 
 
-class ReviewProductView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        product = get_object_or_404(Product, id=pk)
+class PublishProductView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "catalog.can_unpublish_product"
 
-        if not (request.user == product.owner or request.user.has_perm('catalog.can_unpublish_product')):
-            return HttpResponseForbidden('У вас нет прав для этого действия')
+    def post(self, request: HttpRequest, product_id: int):
+        product = get_object_or_404(Product, pk=product_id)
+        product.is_published = True
+        product.save()
+        return redirect('catalog:product_detail', pk=product_id)
 
-        if 'unpublish' in request.POST:
-            product.is_published = False
-            product.save()
-            return redirect('catalog:product_list')
 
-        if 'publish' in request.POST:
-            if request.user != product.owner:
-                return HttpResponseForbidden('Только владелец может опубликовать товар')
-            product.is_published = True
-            product.save()
-            return redirect('catalog:product_list')
+class UnpublishProductView(LoginRequiredMixin, PermissionRequiredMixin, View):
+    permission_required = "catalog.can_unpublish_product"
 
-        if 'delete' in request.POST:
-            if not (request.user == product.owner or request.user.has_perm('catalog.can_delete_product')):
-                return HttpResponseForbidden('У вас нет прав на удаление продукта')
-            product.delete()
-            return redirect('catalog:product_list')
-
-        return redirect('catalog:product_list')
+    def post(self, request: HttpRequest, product_id: int):
+        product = get_object_or_404(Product, pk=product_id)
+        product.is_published = False
+        product.save()
+        return redirect('catalog:product_detail', pk=product_id)
 
 
 class HomeListView(ListView):
