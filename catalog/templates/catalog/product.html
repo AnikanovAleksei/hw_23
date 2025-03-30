@@ -1,0 +1,35 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}
+    Главная страница – Skystore
+{% endblock %}
+
+{% block content %}
+<body>
+<div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+    <h5 class="my-0 mr-md-auto font-weight-normal">Skystore</h5>
+    {% include 'catalog/_menu.html' %}
+</div>
+<div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+    {% for product in object_list %}
+    <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+            <div class="card-header py-3">
+                <h4 class="my-0 fw-normal">{{ object.category }}</h4>
+            </div>
+            <div class="card-body">
+                <img src="{{ object.image.url }}" alt="{{ object.name }}" class="product-image mb-3">
+                <h1 class="card-title pricing-card-title">{{ object.price }}₽</h1>
+                <ul class="list-unstyled mt-3 mb-4">
+                    <li>{{ object.name }}</li>
+                    <li>{{ object.description|truncatechars:100 }}</li>
+                </ul>
+                <a class="btn btn-primary" href="{% url 'catalog:product_detail' product.pk %}"
+                   role="button">Посмотреть</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
