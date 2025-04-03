@@ -55,6 +55,16 @@ class ProductDetailView(DetailView):
     template_name = 'catalog/product_detail.html'
     context_object_name = 'product'
 
+    def get_queryset(self):
+        queryset = Product.objects.filter(is_published=True)
+
+        if self.request.user.is_authenticated:
+            user_products = Product.objects.filter(owner=self.request.user)
+            if user_products.exists() or self.request.user.has_perm('catalog.can_unpublish_product'):
+                queryset = Product.objects.all()
+
+        return queryset
+
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
@@ -83,7 +93,11 @@ class ProductsListView(ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return Product.objects.filter(is_published=True)
+            user_products = Product.objects.filter(owner=self.request.user)
+
+            if user_products.exists() or self.request.user.has_perm('catalog.can_unpublish_product'):
+                return Product.objects.all()
+
         return Product.objects.filter(is_published=True)
 
 
