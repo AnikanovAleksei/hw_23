@@ -3,6 +3,10 @@ from django.http import HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView, View
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from django.core.cache import cache
+from .services import CategoryService
 
 from catalog.models import Product
 from catalog.forms import ProductForm
@@ -50,6 +54,7 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'catalog/product_detail.html'
@@ -92,13 +97,21 @@ class ProductsListView(ListView):
     context_object_name = 'products'
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            user_products = Product.objects.filter(owner=self.request.user)
+        queryset = cache.get('products_queryset')
 
-            if user_products.exists() or self.request.user.has_perm('catalog.can_unpublish_product'):
-                return Product.objects.all()
+        if not queryset:
+            if self.request.user.is_authenticated:
+                user_products = Product.objects.filter(owner=self.request.user)
 
-        return Product.objects.filter(is_published=True)
+                if user_products.exists() or self.request.user.has_perm('catalog.can_unpublish_product'):
+                    queryset = Product.objects.all()
+                else:
+                    queryset = Product.objects.filter(is_published=True)
+            else:
+                queryset = Product.objects.filter(is_published=True)
+
+            cache.set('products_queryset', queryset, 60 * 15)
+        return queryset
 
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
@@ -111,3 +124,10 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         if not (product.owner == request.user or request.user.has_perm('catalog.can_delete_product')):
             raise PermissionDenied("У вас нет прав на удаление этого продукта")
         return super().dispatch(request, *args, **kwargs)
+
+
+class ProductListByCategoryView(View):
+    def get(self, request, category_id):
+        products = CategoryService.get_products_by_category(category_id)
+
+        return render(request, 'catalog/product_list_by_category.html', {'products': products})

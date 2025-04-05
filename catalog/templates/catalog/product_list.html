@@ -33,7 +33,6 @@
 </div>
 
 <div class="container mt-4">
-    <!-- Кнопка создания товара (видна только авторизованным) -->
     {% if user.is_authenticated %}
     <div class="mb-4">
         <a href="{% url 'catalog:product_create' %}" class="btn btn-success">
